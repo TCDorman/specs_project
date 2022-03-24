@@ -1,0 +1,35 @@
+{% extends 'base.html'%} 
+{% block content %} 
+
+<h1>Players</h1>
+<h2>First decide what two players you'd like to compare by filtering through our database!</h2>
+{% for item in player_list %}
+{{ item.player_name }} ||
+{% endfor %}
+
+
+<form action="/players_get" method="GET">
+    <div>
+        <label>
+            Overall Rating Restriction? ex. 97, 67, 75 ...
+            <input name="overall_rating" type="text">
+        </label>
+    </div>
+    <input type="submit">
+</form>
+
+<form action="/search_player_name" method="POST">
+    <div>
+        <label>
+            Player Name
+            <input name="player_name" type="text">
+        </label>
+        <label>Player 2 name
+            <input name="player2_name" type="text">
+        </label>
+    </div>
+    <input type="submit">
+</form>
+
+
+{% endblock %}

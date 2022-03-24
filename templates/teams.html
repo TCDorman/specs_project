@@ -1,0 +1,22 @@
+{% extends 'base.html'%} 
+{% block content %} 
+
+<h1>Teams</h1>
+{% for item in league %}
+{{ item.league_name }} ||
+{% endfor %}
+<form action="/search_team_name" method="POST">
+    <div>
+        <label>
+            Team Name
+            <input name="team_name" type="text">
+        </label>
+        <label>
+            Team 2 Name
+            <input name="team2_name" type="text">
+        </label>
+    </div>
+    <input type="submit">
+</form>
+
+{% endblock %}

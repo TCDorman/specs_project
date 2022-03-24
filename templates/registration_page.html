@@ -1,9 +1,9 @@
-{% extends 'base.html'} 
+{% extends 'base.html'%} 
 {% block content %} 
 
 <h1>Register</h1>
 
-<form action="register" method="POST">
+<form action="/register_process" method="POST">
 
     <div>
         <label>
@@ -25,10 +25,10 @@
             <input type="username" name="username">
         </label>
     </div>
-
-    <div>
-        <input type="submit" name="Register">        
-    </div>
+    <label>
+        Create account
+    </label>
+    <input type="submit">
 </form>
 
 {% endblock %}

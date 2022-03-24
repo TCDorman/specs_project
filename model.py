@@ -1,22 +1,25 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
-
-
+from flask_login import UserMixin
 
 db = SQLAlchemy()
 
 
-class User(db.Model):
+
+class User(db.Model, UserMixin):
 
     __tablename__ = "users"
-
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     username = db.Column(db.String(24), unique=True)
     email = db.Column(db.String(64), nullable=False)
+    def get_id(self):
+           return (self.user_id)
     password = db.Column(db.String(64), nullable=False)
-    
 
 class Player(db.Model):
+
+    def __init__(self, arg):
+        self.arg = arg
 
     __tablename__ = "player"
 
@@ -65,12 +68,24 @@ class Player(db.Model):
     gk_positioning = db.Column(db.Integer, nullable=True)
     gk_reflexes = db.Column(db.Integer, nullable=True)
 
+    def __repr__(self):
+        """Provide helpful representation when needed"""
+
+        return f"<Player player_id={self.player_id} overall_rating={self.overall_rating}>"
+
+    
 class Country(db.Model):
 
     __tablename__ = "country"
 
     country_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     country_name = db.Column(db.String(64), nullable = False)
+
+    def __repr__(self):
+        """Provide helpful representation when needed"""
+
+        return f"<Country country_id={self.country_id} country_name={self.country_name}>"
+
 
 class League(db.Model):
 
@@ -79,6 +94,14 @@ class League(db.Model):
     league_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     country_id = db.Column(db.Integer, ForeignKey('country.country_id'))
     league_name = db.Column(db.String(65), nullable = False)
+
+    country = db.relationship("Country", backref=db.backref("league", order_by=league_id))
+
+    def __repr__(self):
+        """Provide helpful representation when needed"""
+
+        return f"<League league_id={self.league_id} league_name={self.league_name} country_id={self.country_id}>"
+
 
 class Match(db.Model):
 
@@ -93,6 +116,15 @@ class Match(db.Model):
     match_api_id = db.Column(db.Integer, nullable=True) 
     home_team_api_id = db.Column(db.Integer, nullable=True)
     away_team_api_id= db.Column(db.Integer, nullable=True)
+
+    country = db.relationship("Country", backref=db.backref("match", order_by=match_id))
+    league = db.relationship("League", backref=db.backref("match", order_by=match_id))
+
+    def __repr__(self):
+        """Provide helpful representation when needed"""
+
+        return f"<Match match_id={self.match_id} season={self.season} date={self.date}>"
+
 
 class Team(db.Model):
 
@@ -122,6 +154,11 @@ class Team(db.Model):
     defenceTeamWidthClass= db.Column(db.String(64), nullable=True)
     defenceDefenderLineClass= db.Column(db.String(64), nullable=True)
 
+    def __repr__(self):
+        """Provide helpful representation when needed"""
+
+        return f"<Team team_id={self.team_id} team_long_name={self.team_long_name} team_short_name={self.team_short_name}>"
+
 
 class User_team(db.Model):
 
@@ -131,9 +168,15 @@ class User_team(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     team_id = db.Column(db.Integer, db.ForeignKey('team.team_id'))
 
+    user = db.relationship("User", backref=db.backref("user_team", order_by=user_team_id))
+    team = db.relationship("Team", backref=db.backref("user_team", order_by=user_team_id))
+
+    def __repr__(self):
+        """Provide helpful representation when needed"""
+
+        return f"<User_team user_team_id={self.user_team_id} user_id={self.user_id} team_id={self.team_id}>"
+
     
-
-
 class User_player(db.Model):
     
     __tablename__ = "user_player"
@@ -142,17 +185,25 @@ class User_player(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     player_id = db.Column(db.Integer, db.ForeignKey('player.player_id'))
 
+    user = db.relationship("User", backref=db.backref("user_player", order_by=user_player_id))
+    player = db.relationship("Player", backref=db.backref("user_player", order_by=user_player_id))
+
+    def __repr__(self):
+        """Provide helpful representation when needed"""
+
+        return f"<User_player user_player_id={self.user_player_id} user_id={self.user_id} player_id={self.player_id}>"
+
 
 def connect_to_db(app):
         # As a convenience, if we run this module interactively, it will leave
         # you in a state of being able to work with the database directly.
         app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///soccer_data_2'
-        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
         db.app = app
         db.init_app(app)
 
 if __name__ == "__main__":
-    from functions import app
+    from server import app
     connect_to_db(app)
     db.create_all()
     print("Connected to DB.")

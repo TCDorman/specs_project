@@ -1,0 +1,19 @@
+{% extends 'base.html' %} 
+{% block content %} 
+<h1>Team 1: {{ team.team_long_name }}</h1> 
+<!-- Team 1 Information -->
+<div>
+    Abbriviated Team Name {{ team2.team_short_name }}
+    Team Play Speed Build Up {{ team.buildUpPlaySpeed }}, {{ team. buildUpPlaySpeedClass }}
+</div>
+<!-- Team 2 Information -->
+<h1>Team 2: {{ team2.team_long_name }}</h1>
+<div>
+    Abbriviated Team Name {{ team2.team_short_name }}
+    Team Play Speed Build Up {{ team2.buildUpPlaySpeed }}, {{ team2. buildUpPlaySpeedClass}}
+</div>
+
+
+    
+
+{% endblock %}
